@@ -15,8 +15,9 @@ class SM(BaseEstimator):
         Subspace of N classes.
     """
     
-    def __init__(self, n_dimension):
+    def __init__(self, n_dimension,is_normalize=True):
         self.n_dimension = n_dimension
+        self.is_normalize= is_normalize
     
     def fit(self, X, y):
         """Fit the model with X.
@@ -32,7 +33,8 @@ class SM(BaseEstimator):
         """
         self.classes_ = np.unique(y)
         self.subspaces_ = []
-        X = normalize_(X)
+        if self.is_normalize:
+            X = normalize_(X)
         for class_name in self.classes_:
             idx = np.argwhere(y == class_name).squeeze()
             X_class_i = X[idx, :]
@@ -62,7 +64,8 @@ class SM(BaseEstimator):
 
         # n: n_samples, d: n_features
         n, d = X.shape
-
+        if self.is_normalize:
+            X = normalize_(X)
         similarities = X.reshape((n, 1, 1, d)) @ \
             np.expand_dims(self.subspaces_, axis=0) @ \
             X.reshape((n, 1, d, 1))
